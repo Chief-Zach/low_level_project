@@ -11,7 +11,12 @@
 #include "parse.h"
 
 void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
-
+    for (int i=0; i<dbhdr->count; i++) {
+        printf("Employee: %d\n", i);
+        printf("\tName: %s\n", employees[i].name);
+        printf("\tAddress: %s\n", employees[i].address);
+        printf("\tHours: %d\n", employees[i].hours);
+    }
 }
 
 int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, 
@@ -36,13 +41,13 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees,
     temp = realloc(temp, sizeof(struct employee_t) * dbhdr->count+1);
     if (temp == NULL) {
         printf("Failed to realloc employees\n");
-        return -1;
+        return STATUS_ERROR;
     }
 
     dbhdr->count++;
 
-    strncpy(temp[dbhdr->count-1].name, name, sizeof(temp[dbhdr->count-1].name));
-    strncpy(temp[dbhdr->count-1].address, addr, sizeof(temp[dbhdr->count-1].address));
+    strncpy(temp[dbhdr->count-1].name, name, sizeof(temp[dbhdr->count-1].name)-1);
+    strncpy(temp[dbhdr->count-1].address, addr, sizeof(temp[dbhdr->count-1].address)-1);
 
     temp[dbhdr->count-1].hours = atoi(hours);
 
@@ -86,7 +91,9 @@ int output_file(int fd, struct dbheader_t *dbhdr, struct employee_t *employees) 
     int realcount = dbhdr->count;
 
     dbhdr->magic = htonl(dbhdr->magic);
-    dbhdr->filesize = htonl(dbhdr->filesize);
+    //dbhdr->filesize = htonl(sizeof(struct dbheader_t) + (sizeof(struct employee_t) * realcount));
+    dbhdr->filesize = htonl(12);
+
     dbhdr->count = htons(dbhdr->count);
     dbhdr->version = htons(dbhdr->version);
 
