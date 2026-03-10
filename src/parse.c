@@ -11,6 +11,11 @@
 #include "parse.h"
 
 void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
+    if (dbhdr == NULL || employees == NULL) {
+        printf("No employees found\n");
+        return;
+    }
+
     for (int i=0; i<dbhdr->count; i++) {
         printf("Employee: %d\n", i);
         printf("\tName: %s\n", employees[i].name);
@@ -141,12 +146,6 @@ int validate_db_header(int fd, struct dbheader_t **headerOut) {
 
     if (header->magic != HEADER_MAGIC) {
         printf("Improper header magic\n");
-        free(header);
-        return STATUS_ERROR;
-    }
-
-    if (header->version != 1) {
-        printf("Improper header version\n");
         free(header);
         return STATUS_ERROR;
     }
