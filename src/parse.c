@@ -38,7 +38,7 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees,
     
     struct employee_t *temp = *employees;
 
-    temp = realloc(temp, sizeof(struct employee_t) * dbhdr->count+1);
+    temp = realloc(temp, sizeof(struct employee_t) * (dbhdr->count+1));
     if (temp == NULL) {
         printf("Failed to realloc employees\n");
         return STATUS_ERROR;
@@ -91,8 +91,7 @@ int output_file(int fd, struct dbheader_t *dbhdr, struct employee_t *employees) 
     int realcount = dbhdr->count;
 
     dbhdr->magic = htonl(dbhdr->magic);
-    //dbhdr->filesize = htonl(sizeof(struct dbheader_t) + (sizeof(struct employee_t) * realcount));
-    dbhdr->filesize = htonl(12);
+    dbhdr->filesize = htonl(sizeof(struct dbheader_t) + (sizeof(struct employee_t) * realcount));
 
     dbhdr->count = htons(dbhdr->count);
     dbhdr->version = htons(dbhdr->version);
